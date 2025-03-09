@@ -29,13 +29,18 @@ async function updateDiscordEmbed(steamId) {
     const status = await checkSteamStatus(steamId, STEAM_API_KEY);
     if (!status) return;
 
+    // Build the embed with the desired format
     const embed = new EmbedBuilder()
-        .setTitle(`${status.name}'s Steam Status`)
+        .setTitle(`Steam Status for ${steamId}`)
         .setColor(status.playingCSGO ? '#00FF00' : '#FF0000')
         .addFields(
-            { name: 'Status', value: status.status, inline: true },
-            { name: 'Game', value: status.game, inline: true },
-            { name: 'Last Logoff', value: status.lastLogoff }
+            { name: '👤 Player', value: status.name || 'Unknown', inline: false },
+            { name: '🔗 Profile URL', value: `https://steamcommunity.com/profiles/${steamId}`, inline: false },
+            { name: '📡 Status', value: `${status.status} (${status.rawState !== undefined ? status.rawState : 'N/A'})`, inline: false },
+            { name: '⏹️ Last Logoff', value: status.lastLogoff, inline: false },
+            { name: '🎮 Currently Playing', value: status.game, inline: false },
+            { name: '📅 Account Created', value: status.accountCreated || 'N/A', inline: false },
+            { name: '🌐 Profile Visibility', value: status.visibility || 'Unknown', inline: false }
         )
         .setTimestamp();
 
