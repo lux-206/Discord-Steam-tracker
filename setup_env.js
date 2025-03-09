@@ -6,7 +6,6 @@ const rl = readline.createInterface({
     output: process.stdout
 });
 
-// Function to ask questions sequentially
 function askQuestion(query) {
     return new Promise(resolve => rl.question(query, resolve));
 }
@@ -15,21 +14,31 @@ async function setupEnv() {
     console.log("Let's set up your .env file for the Discord bot!");
 
     const steamApiKey = await askQuestion("Enter your Steam API Key: ");
-    const steamId = await askQuestion("Enter the Steam ID to check (e.g., 76561198811767137): ");
+    const numUsers = parseInt(await askQuestion("How many Steam users do you want to track? (e.g., 2): "), 10);
+
+    if (isNaN(numUsers) || numUsers < 1) {
+        console.error("❌ Please enter a valid number of users (1 or more).");
+        rl.close();
+        return;
+    }
+
+    const steamIds = [];
+    for (let i = 1; i <= numUsers; i++) {
+        const steamId = await askQuestion(`Enter Steam ID #${i} (e.g., 76561198811767137): `);
+        steamIds.push(steamId);
+    }
+
     const discordToken = await askQuestion("Enter your Discord Bot Token: ");
     const channelId = await askQuestion("Enter the Discord Channel ID: ");
     const discordIdToMention = await askQuestion("Enter the Discord ID to mention: ");
 
-    // Construct .env content
-    const envContent = `
-STEAM_API_KEY=${steamApiKey}
-STEAM_ID_TO_CHECK=${steamId}
-DISCORD_TOKEN=${discordToken}
-CHANNEL_ID=${channelId}
-DISCORD_ID_TO_MENTION=${discordIdToMention}
-`.trim();
+    // Construct .env content dynamically
+    let envContent = `STEAM_API_KEY=${steamApiKey}\n`;
+    steamIds.forEach((id, index) => {
+        envContent += `STEAM_ID_TO_CHECK_${index + 1}=${id}\n`;
+    });
+    envContent += `DISCORD_TOKEN=${discordToken}\nCHANNEL_ID=${channelId}\nDISCORD_ID_TO_MENTION=${discordIdToMention}`;
 
-    // Write to .env file
     fs.writeFile('.env', envContent, (err) => {
         if (err) {
             console.error("❌ Error writing .env file:", err);
@@ -40,5 +49,4 @@ DISCORD_ID_TO_MENTION=${discordIdToMention}
     });
 }
 
-// Run the setup
 setupEnv();
