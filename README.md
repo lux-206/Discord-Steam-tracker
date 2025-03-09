@@ -2,6 +2,8 @@
 
 This is a Discord bot that tracks Steam users' activity using the Steam Web API. It periodically checks their status, sends updates as Discord embeds to a specified channel, and mentions a Discord user when any status changes. The bot updates existing embeds rather than posting new messages, keeping the channel clean.
 
+![Bot](https://imgur.com/xCeXaMk)
+
 ## Features
 - Monitors a user-defined number of Steam users' online status, current game, and last logoff time.
 - Sends updates to a Discord channel as embedded messages (one embed per user).
