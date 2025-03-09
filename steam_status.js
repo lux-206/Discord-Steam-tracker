@@ -21,9 +21,12 @@ async function checkSteamStatus(steamId, apiKey) {
         return {
             name: player.personaname,
             status: stateMap[player.personastate] || 'Unknown',
+            rawState: player.personastate, // Raw state number for display
             game: player.gameextrainfo || (player.gameid ? `AppID ${player.gameid}` : 'Not in a game'),
             lastLogoff: player.lastlogoff ? new Date(player.lastlogoff * 1000).toLocaleString() : 'N/A',
-            playingCSGO: player.gameid === '730'
+          //  playingCSGO: player.gameid === '730',
+            accountCreated: player.timecreated ? new Date(player.timecreated * 1000).toLocaleString() : 'N/A',
+            visibility: player.communityvisibilitystate === 3 ? 'Public' : 'Private/Friends Only'
         };
     } catch (error) {
         console.error(`❌ Error fetching Steam status for ${steamId}:`, error.message);
